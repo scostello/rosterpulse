@@ -1,4 +1,4 @@
-module rp-logger
+module github.com/scostello/logger
 
 go 1.15
 

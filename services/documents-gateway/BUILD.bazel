@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "documents-gateway_lib",
+    srcs = ["server.go"],
+    importpath = "github.com/scostello/rosterpulse/services/documents-gateway",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//services/documents-gateway/graph",
+        "//services/documents-gateway/graph/generated",
+        "@com_github_99designs_gqlgen//graphql/handler:go_default_library",
+        "@com_github_99designs_gqlgen//graphql/handler/debug:go_default_library",
+        "@com_github_99designs_gqlgen//graphql/playground:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "documents-gateway",
+    embed = [":documents-gateway_lib"],
+    visibility = ["//visibility:public"],
+)

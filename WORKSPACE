@@ -98,9 +98,63 @@ http_archive(
 )
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-load("//:go_deps.bzl", "logger_dependencies")
+load("//:go_deps.bzl", "gateway_dependencies", "logger_dependencies")
+
+# gazelle:repository_macro go_deps.bzl%gateway_dependencies
+gateway_dependencies()
 
 # gazelle:repository_macro go_deps.bzl%logger_dependencies
 logger_dependencies()
 
 gazelle_dependencies()
+
+
+# ************************************
+# Docker
+# ************************************
+http_archive(
+    name = "io_bazel_rules_docker",
+    sha256 = "1698624e878b0607052ae6131aa216d45ebb63871ec497f26c67455b34119c80",
+    strip_prefix = "rules_docker-7da0de3d094aae5601c45ae0855b64fb2771cd72",
+    urls = ["https://github.com/bazelbuild/rules_docker/archive/7da0de3d094aae5601c45ae0855b64fb2771cd72.tar.gz"],
+)
+
+load(
+    "@io_bazel_rules_docker//repositories:repositories.bzl",
+    container_repositories = "repositories",
+)
+container_repositories()
+
+load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
+
+container_deps()
+
+load(
+    "@io_bazel_rules_docker//container:container.bzl",
+    "container_pull",
+)
+
+container_pull(
+    name = "go_base_image",
+    registry = "docker.io",
+    repository = "library/golang",
+    tag = "alpine",
+)
+
+# ************************************
+# Kubernetes
+# ************************************
+http_archive(
+    name = "io_bazel_rules_k8s",
+    strip_prefix = "rules_k8s-89ce5528b3c133f4a37f5ca843a3b76eb9769346",
+    urls = ["https://github.com/bazelbuild/rules_k8s/archive/89ce5528b3c133f4a37f5ca843a3b76eb9769346.tar.gz"],
+)
+
+load("@io_bazel_rules_k8s//k8s:k8s.bzl", "k8s_repositories")
+
+k8s_repositories()
+
+load("@io_bazel_rules_k8s//k8s:k8s_go_deps.bzl", k8s_go_deps = "deps")
+
+k8s_go_deps()
+

@@ -1,0 +1,21 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_library(
+    name = "channels-gateway_lib",
+    srcs = ["server.go"],
+    importpath = "github.com/scostello/rosterpulse/services/channels-gateway",
+    visibility = ["//visibility:private"],
+    deps = [
+        "//services/channels-gateway/graph",
+        "//services/channels-gateway/graph/generated",
+        "@com_github_99designs_gqlgen//graphql/handler:go_default_library",
+        "@com_github_99designs_gqlgen//graphql/handler/debug:go_default_library",
+        "@com_github_99designs_gqlgen//graphql/playground:go_default_library",
+    ],
+)
+
+go_binary(
+    name = "channels-gateway",
+    embed = [":channels-gateway_lib"],
+    visibility = ["//visibility:public"],
+)

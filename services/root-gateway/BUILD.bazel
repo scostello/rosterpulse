@@ -1,0 +1,18 @@
+load("//tools:ts_library.bzl", "ts_library")
+
+package(default_visibility = ["//visibility:public"])
+
+_DEPENDENCIES = [
+    "@npm//@types/node",
+    "@npm//@apollo/gateway",
+    "@npm//apollo-server",
+]
+
+ts_library(
+    name = "root-gateway_lib",
+    srcs = glob(
+        ["src/**/*.ts"],
+    ),
+    module_name = "@rosterpulse/gateway",
+    deps = _DEPENDENCIES,
+)

@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "graph",
+    srcs = [
+        "entity.resolvers.go",
+        "resolver.go",
+        "schema.resolvers.go",
+    ],
+    importpath = "github.com/scostello/rosterpulse/services/accounts-gateway/graph",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/accounts-gateway/graph/generated",
+        "//services/accounts-gateway/graph/model",
+    ],
+)
