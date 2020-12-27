@@ -4,6 +4,7 @@ package(default_visibility = ["//visibility:public"])
 
 # gazelle:prefix github.com/scostello/rosterpulse
 # gazelle:exclude node_modules
+# gazelle:exclude tilt_modules
 gazelle(name = "gazelle")
 
 exports_files([
