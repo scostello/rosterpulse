@@ -114,7 +114,7 @@ gazelle_dependencies()
 # ************************************
 http_archive(
     name = "io_bazel_rules_docker",
-    sha256 = "1698624e878b0607052ae6131aa216d45ebb63871ec497f26c67455b34119c80",
+    sha256 = "c15ef66698f5d2122a3e875c327d9ecd34a231a9dc4753b9500e70518464cc21",
     strip_prefix = "rules_docker-7da0de3d094aae5601c45ae0855b64fb2771cd72",
     urls = ["https://github.com/bazelbuild/rules_docker/archive/7da0de3d094aae5601c45ae0855b64fb2771cd72.tar.gz"],
 )
@@ -146,6 +146,7 @@ container_pull(
 # ************************************
 http_archive(
     name = "io_bazel_rules_k8s",
+    sha256 = "03b93595d0fb967dcd5a73071a916f23ca9ca9b0a3fba7029bfc0461990f3cb0",
     strip_prefix = "rules_k8s-89ce5528b3c133f4a37f5ca843a3b76eb9769346",
     urls = ["https://github.com/bazelbuild/rules_k8s/archive/89ce5528b3c133f4a37f5ca843a3b76eb9769346.tar.gz"],
 )
@@ -158,3 +159,9 @@ load("@io_bazel_rules_k8s//k8s:k8s_go_deps.bzl", k8s_go_deps = "deps")
 
 k8s_go_deps()
 
+# ************************************
+# Helm
+# ************************************
+load("//tools/repositories:repositories.bzl", tools_repositories = "repositories")
+
+tools_repositories()
