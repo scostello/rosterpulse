@@ -1,4 +1,5 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 go_library(
     name = "channels-gateway_lib",
@@ -18,4 +19,11 @@ go_binary(
     name = "channels-gateway",
     embed = [":channels-gateway_lib"],
     visibility = ["//visibility:public"],
+)
+
+go_image(
+    name = "image",
+    base = "@go_base_image//image",
+    embed = [":channels-gateway_lib"],
+    # importpath = "github.com/scostello/rosterpulse/services/channels-gateway",
 )

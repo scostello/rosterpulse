@@ -13,7 +13,7 @@ import (
 	"github.com/scostello/rosterpulse/services/channels-gateway/graph/generated"
 )
 
-const defaultPort = "4002"
+const defaultPort = "8080"
 
 func main() {
 	port := os.Getenv("PORT")

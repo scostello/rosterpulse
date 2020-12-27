@@ -1,0 +1,10 @@
+image:
+  repository: channels-gateway-dev
+
+livenessProbe:
+  enabled: false
+  path: /
+
+readinessProbe:
+  enabled: false
+  path: /

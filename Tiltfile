@@ -6,23 +6,35 @@ services_dir = "services"
 services = [
     {
         "svc_name": "accounts-gateway",
-        "svc_dir": "{services_dir}/accounts-gateway".format(services_dir = services_dir),
-        "chart_dir": "{services_dir}/accounts-gateway/helm-chart".format(services_dir = services_dir),
-        "svc_image_target": "{services_dir}/accounts-gateway:image".format(services_dir = services_dir),
-        "svc_binary_target": "{services_dir}/accounts-gateway:accounts-gateway".format(services_dir = services_dir),
+        "port_forward": "8080:8080",
+    },
+    {
+        "svc_name": "channels-gateway",
+        "port_forward": "8081:8080",
+    },
+    {
+        "svc_name": "documents-gateway",
+        "port_forward": "8082:8080",
     },
 ]
 
 for svc in services:
+    svc_name = svc["svc_name"]
+    svc_ports = svc["port_forward"]
+    svc_dir = "{services_dir}/{svc_name}".format(services_dir = services_dir, svc_name = svc_name)
+    chart_dir = "{services_dir}/{svc_name}/helm-chart".format(services_dir = services_dir, svc_name = svc_name)
+    svc_image_target = "{services_dir}/{svc_name}:image".format(services_dir = services_dir, svc_name = svc_name)
+    svc_binary_target = "{services_dir}/{svc_name}:{svc_name}".format(services_dir = services_dir, svc_name = svc_name)
+
     # Use Bazel to generate the Kubernetes YAML
-    for f in bazel_sourcefile_deps("//{chart_dir}:deploy".format(chart_dir = svc["chart_dir"])):
+    for f in bazel_sourcefile_deps("//{chart_dir}:deploy".format(chart_dir = chart_dir)):
         watch_file(f)
 
-    k8s_yaml(local("bazel run //{chart_dir}:deploy".format(chart_dir = svc["chart_dir"])))
+    k8s_yaml(local("bazel run //{chart_dir}:deploy".format(chart_dir = chart_dir)))
 
     # The go_image BUILD rule
-    image_target="//{image_target}".format(image_target = svc["svc_image_target"])
-    binary_target="//{binary_target}".format(binary_target = svc["svc_binary_target"])
+    image_target="//{image_target}".format(image_target = svc_image_target)
+    binary_target="//{binary_target}".format(binary_target = svc_binary_target)
 
     # Tilt works better if we watch the bazel output tree
     # directly instead of the ./bazel-bin symlinks.
@@ -32,26 +44,28 @@ for svc in services:
     # go_binary target and reading the output log.
     binary_target_local = os.path.join(
         bazel_bin,
-        "services/{bin_name}/{bin_name}_/{bin_name}".format(bin_name = svc["svc_name"]),
+        "services/{bin_name}/{bin_name}_/{bin_name}".format(bin_name = svc_name),
     )
+
+    print("local binary", binary_target_local)
 
     # Where go_image puts the Go binary in the container. You can determine this
     # by shelling into the container with `kubectl exec -it [pod name] -- sh`
-    container_workdir = "/app/{svc_dir}/image.binary.runfiles/rosterpulse/{svc_dir}/".format(svc_dir = svc["svc_dir"])
+    container_workdir = "/app/{svc_dir}/image.binary.runfiles/rosterpulse/{svc_dir}/".format(svc_dir = svc_dir)
     binary_target_container = container_workdir + "image.binary_/image.binary"
 
     # Where go_image puts the image in Docker (bazel/path/to/target:name)
-    bazel_image="bazel/{svc_dir}:image".format(svc_dir = svc["svc_dir"])
+    bazel_image="bazel/{svc_dir}:image".format(svc_dir = svc_dir)
 
     local_resource(
-        name    = "{svc_name}-compile".format(svc_name = svc["svc_name"]),
+        name    = "{svc_name}-compile".format(svc_name = svc_name),
         cmd     = "bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 {binary_target}".format(binary_target=binary_target),
         deps    = bazel_sourcefile_deps(binary_target),
     )
 
     custom_build_with_restart(
-        ref         = "{svc_name}-dev".format(svc_name = svc["svc_name"]),
-        command     = ("bazel build --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 {image_target} && " +
+        ref         = "{svc_name}-dev".format(svc_name = svc_name),
+        command     = ("bazel run --platforms=@io_bazel_rules_go//go/toolchain:linux_amd64 {image_target} -- --norun && " +
                         "docker tag {bazel_image} $EXPECTED_REF").format(image_target=image_target, bazel_image=bazel_image),
         deps        = [binary_target_local],
         entrypoint  = binary_target_container,
@@ -61,7 +75,7 @@ for svc in services:
     )
 
     k8s_resource(
-        "{svc_name}-dev".format(svc_name = svc["svc_name"]),
-        # port_forwards=8000,
-        resource_deps=["{svc_name}-compile".format(svc_name = svc["svc_name"])],
+        "{svc_name}-dev".format(svc_name = svc_name),
+        port_forwards=svc_ports,
+        resource_deps=["{svc_name}-compile".format(svc_name = svc_name)],
     )

@@ -25,5 +25,5 @@ go_image(
     name = "image",
     base = "@go_base_image//image",
     embed = [":accounts-gateway_lib"],
-    importpath = "github.com/scostello/rosterpulse/services/accounts-gateway",
+    # importpath = "github.com/scostello/rosterpulse/services/accounts-gateway",
 )

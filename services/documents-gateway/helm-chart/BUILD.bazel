@@ -1,0 +1,23 @@
+load("@io_bazel_rules_k8s//k8s:object.bzl", "k8s_object")
+load("//tools/helm:helm.bzl", "helm_chart", "helm_template")
+
+helm_chart(
+    name = "chart_tar",
+    package_name = "documents-gateway",
+    srcs = glob(["**"]),
+)
+
+helm_template(
+    name = "template",
+    chart_tar = ":chart_tar",
+    release_name = "documents-gateway-dev",
+    values_yaml_files = [
+        ":values_dev.yaml",
+        ":values_local.yaml",
+    ],
+)
+
+k8s_object(
+    name = "deploy",
+    template = ":template",
+)
