@@ -1,4 +1,5 @@
 import { ApolloGateway } from '@apollo/gateway';
+import { createLogger } from '@rosterpulse/logger-ts';
 import { ApolloServer } from 'apollo-server';
 
 const gateway = new ApolloGateway({
@@ -15,6 +16,12 @@ const server = new ApolloServer({
   subscriptions: false,
 });
 
+const logger = createLogger({
+  appID: 'root-gateway',
+  appVersion: '0.1.0',
+  schemaVersion: '1.0',
+})
+
 server.listen().then(({ url }) => {
-  console.log(`🚀 Server ready at ${url}!!`);
+  logger.info(`🚀 Server ready at ${url}!!`);
 });

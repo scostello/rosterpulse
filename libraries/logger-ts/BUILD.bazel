@@ -18,7 +18,7 @@ ts_library(
         ["src/**/*.ts"],
         exclude = ["src/**/*.test.ts"],
     ),
-    module_name = "@rosterpulse/logger",
+    module_name = "@rosterpulse/logger-ts",
     deps = _DEPENDENCIES,
 )
 
