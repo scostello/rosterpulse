@@ -8,21 +8,29 @@ services = [
         "svc_name": "accounts-gateway",
         "port_forward": "8080:8080",
         "platform": "golang",
+        "resource_deps": [],
     },
     {
         "svc_name": "channels-gateway",
         "port_forward": "8081:8080",
         "platform": "golang",
+        "resource_deps": [],
     },
     {
         "svc_name": "documents-gateway",
         "port_forward": "8082:8080",
         "platform": "golang",
+        "resource_deps": [],
     },
     {
         "svc_name": "root-gateway",
-        "port_forward": "8001:8080",
+        "port_forward": "8001:4000",
         "platform": "nodejs",
+        "resource_deps": [
+            "accounts-gateway-dev",
+            "channels-gateway-dev",
+            "documents-gateway-dev",
+        ],
     },
 ]
 
@@ -30,6 +38,13 @@ platforms = {
     "golang": "@io_bazel_rules_go//go/toolchain:linux_amd64",
     "nodejs": "@build_bazel_rules_nodejs//toolchains/node:linux_amd64",
 }
+
+def binary_templates(platform):
+    if platform == "nodejs":
+        return {
+            "local": "services/{svc_name}/{svc_name}.sh",
+            "container": "",
+        }
 
 for svc in services:
     svc_name = svc["svc_name"]
@@ -51,6 +66,8 @@ for svc in services:
     image_target="//{image_target}".format(image_target = svc_image_target)
     binary_target="//{binary_target}".format(binary_target = svc_binary_target)
 
+    print("binary_target", binary_target)
+
     # Tilt works better if we watch the bazel output tree
     # directly instead of the ./bazel-bin symlinks.
     bazel_bin = str(local("bazel info bazel-bin")).strip()
@@ -64,28 +81,21 @@ for svc in services:
     if svc_platform_name == "nodejs":
         binary_target_local += os.path.join(
             bazel_bin,
-            "services/root-gateway/root-gateway.sh",
+            "{svc_dir}/{bin_name}.sh".format(svc_dir = svc_dir, bin_name = svc_name),
         )
     else:
         binary_target_local += os.path.join(
             bazel_bin,
-            "services/{bin_name}/{bin_name}_/{bin_name}".format(bin_name = svc_name),
+            "{svc_dir}/{bin_name}_/{bin_name}".format(svc_dir = svc_dir, bin_name = svc_name),
         )
-
-    print("local binary", binary_target_local)
 
     # Where go_image puts the Go binary in the container. You can determine this
     # by shelling into the container with `kubectl exec -it [pod name] -- sh`
-    container_workdir = ""
     binary_target_container = ""
     if svc_platform_name == "nodejs":
-        container_workdir += "/app/services/root-gateway/"
-        binary_target_container += container_workdir + "root-gateway"
+        binary_target_container += "/app/{svc_dir}/{bin_name}".format(svc_dir = svc_dir, bin_name = svc_name)
     else:
-        container_workdir += "/app/{svc_dir}/image.binary.runfiles/rosterpulse/{svc_dir}/".format(svc_dir = svc_dir)
-        binary_target_container += container_workdir + "image.binary_/image.binary"
-
-    # /app/services/root-gateway/root-gateway.runfiles/rosterpulse/services/root-gateway/root-gateway.sh
+        binary_target_container += "/app/{svc_dir}/image.binary.runfiles/rosterpulse/{svc_dir}/image.binary_/image.binary".format(svc_dir = svc_dir)
 
     # Where go_image puts the image in Docker (bazel/path/to/target:name)
     bazel_image="bazel/{svc_dir}:image".format(svc_dir = svc_dir)
@@ -111,6 +121,6 @@ for svc in services:
     k8s_resource(
         "{svc_name}-dev".format(svc_name = svc_name),
         port_forwards=svc_ports,
-        resource_deps=["{svc_name}-compile".format(svc_name = svc_name)],
+        resource_deps=["{svc_name}-compile".format(svc_name = svc_name)] + svc["resource_deps"],
     )
 
