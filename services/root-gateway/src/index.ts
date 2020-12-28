@@ -3,9 +3,9 @@ import { ApolloServer } from 'apollo-server';
 
 const gateway = new ApolloGateway({
   serviceList: [
-    { name: 'accounts', url: 'http://localhost:4001/query' },
-    { name: 'products', url: 'http://localhost:4002/query' },
-    { name: 'reviews', url: 'http://localhost:4003/query' }
+    { name: 'accounts', url: 'http://accounts-gateway-dev:80/query' },
+    { name: 'channels', url: 'http://channels-gateway-dev:80/query' },
+    { name: 'documents', url: 'http://documents-gateway-dev:80/query' }
   ],
 });
 

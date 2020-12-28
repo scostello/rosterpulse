@@ -1,4 +1,7 @@
 load("//tools:ts_library.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@io_bazel_rules_docker//nodejs:image.bzl", "nodejs_image")
+
 
 package(default_visibility = ["//visibility:public"])
 
@@ -15,4 +18,15 @@ ts_library(
     ),
     module_name = "@rosterpulse/gateway",
     deps = _DEPENDENCIES,
+)
+
+nodejs_binary(
+    name = "root-gateway",
+    data = [":root-gateway_lib"],
+    entry_point = "src/index.ts"
+)
+
+nodejs_image(
+    name = "image",
+    binary = ":root-gateway",
 )
