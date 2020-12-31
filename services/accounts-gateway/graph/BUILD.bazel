@@ -10,6 +10,8 @@ go_library(
     importpath = "github.com/scostello/rosterpulse/services/accounts-gateway/graph",
     visibility = ["//visibility:public"],
     deps = [
+        "//protos/accounts",
+        "//services/accounts-gateway/graph/clients",
         "//services/accounts-gateway/graph/generated",
         "//services/accounts-gateway/graph/model",
     ],

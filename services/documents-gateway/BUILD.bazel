@@ -9,9 +9,9 @@ go_library(
     deps = [
         "//services/documents-gateway/graph",
         "//services/documents-gateway/graph/generated",
-        "@com_github_99designs_gqlgen//graphql/handler:go_default_library",
-        "@com_github_99designs_gqlgen//graphql/handler/debug:go_default_library",
-        "@com_github_99designs_gqlgen//graphql/playground:go_default_library",
+        "@com_github_99designs_gqlgen//graphql/handler",
+        "@com_github_99designs_gqlgen//graphql/handler/debug",
+        "@com_github_99designs_gqlgen//graphql/playground",
     ],
 )
 

@@ -1,8 +1,16 @@
+type User @key(fields: "id") {
+  id: ID!
+  username: String!
+}
+
 extend type Query {
   me: User
 }
 
-type User @key(fields: "id") {
-  id: ID!
-  username: String!
+type CreateAccountResponse {
+  success: Boolean!
+}
+
+extend type Mutation {
+  createAccount(userid: String!): CreateAccountResponse!
 }

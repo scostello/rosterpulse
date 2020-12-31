@@ -1,0 +1,10 @@
+image:
+  repository: accounts-service-dev
+
+livenessProbe:
+  enabled: false
+  path: /
+
+readinessProbe:
+  enabled: false
+  path: /

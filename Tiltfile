@@ -11,6 +11,12 @@ services = [
         "resource_deps": [],
     },
     {
+        "svc_name": "accounts-service",
+        "port_forward": [],
+        "platform": "golang",
+        "resource_deps": [],
+    },
+    {
         "svc_name": "channels-gateway",
         "port_forward": "8081:8080",
         "platform": "golang",

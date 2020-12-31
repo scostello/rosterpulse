@@ -98,16 +98,15 @@ http_archive(
 )
 
 load("@bazel_gazelle//:deps.bzl", "gazelle_dependencies")
-load("//:go_deps.bzl", "gateway_dependencies", "logger_dependencies")
-
-# gazelle:repository_macro go_deps.bzl%gateway_dependencies
-gateway_dependencies()
-
-# gazelle:repository_macro go_deps.bzl%logger_dependencies
-logger_dependencies()
 
 gazelle_dependencies()
 
+http_archive(
+    name = "golink",
+    sha256 = "ea728cfc9cb6e2ae024e1d5fbff185224592bbd4dad6516f3cc96d5155b69f0d",
+    strip_prefix = "golink-1.0.0",
+    urls = ["https://github.com/nikunjy/golink/archive/v1.0.0.tar.gz"],
+)
 
 # ************************************
 # Docker
@@ -123,6 +122,11 @@ load(
     "@io_bazel_rules_docker//repositories:repositories.bzl",
     container_repositories = "repositories",
 )
+load("//:go_deps.bzl", "go_repositories")
+
+# gazelle:repository_macro go_deps.bzl%go_repositories
+go_repositories()
+
 container_repositories()
 
 load("@io_bazel_rules_docker//repositories:deps.bzl", container_deps = "deps")
@@ -172,3 +176,17 @@ k8s_go_deps()
 load("//tools/repositories:repositories.bzl", tools_repositories = "repositories")
 
 tools_repositories()
+
+# ************************************
+# Proto Buffers
+# ************************************
+http_archive(
+    name = "com_google_protobuf",
+    # sha256 = "9748c0d90e54ea09e5e75fb7fac16edce15d2028d4356f32211cfa3c0e956564",
+    strip_prefix = "protobuf-9647a7c2356a9529754c07235a2877ee676c2fd0",
+    urls = ["https://github.com/protocolbuffers/protobuf/archive/9647a7c2356a9529754c07235a2877ee676c2fd0.tar.gz"],
+)
+
+load("@com_google_protobuf//:protobuf_deps.bzl", "protobuf_deps")
+
+protobuf_deps()

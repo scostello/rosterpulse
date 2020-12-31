@@ -5,9 +5,24 @@ package graph
 
 import (
 	"context"
+	acct "github.com/scostello/rosterpulse/protos/accounts"
+	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/clients"
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/generated"
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/model"
 )
+
+func (r *mutationResolver) CreateAccount(ctx context.Context, userid string) (*model.CreateAccountResponse, error) {
+	acctClient := clients.GetAccountsClient()
+	payload := &acct.CreateAccountRequest{
+		Userid: userid,
+	}
+	_, err := acctClient.CreateAccount(ctx, payload)
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.CreateAccountResponse{Success: true}, nil
+}
 
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	return &model.User{
@@ -16,8 +31,11 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	}, nil
 }
 
+// Mutation returns generated.MutationResolver implementation.
+func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
+
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-

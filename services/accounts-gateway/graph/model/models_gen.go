@@ -2,6 +2,10 @@
 
 package model
 
+type CreateAccountResponse struct {
+	Success bool `json:"success"`
+}
+
 type User struct {
 	ID       string `json:"id"`
 	Username string `json:"username"`
