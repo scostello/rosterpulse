@@ -39,12 +39,9 @@ platforms = {
     "nodejs": "@build_bazel_rules_nodejs//toolchains/node:linux_amd64",
 }
 
-def binary_templates(platform):
-    if platform == "nodejs":
-        return {
-            "local": "services/{svc_name}/{svc_name}.sh",
-            "container": "",
-        }
+k8s_yaml(helm("./charts/eventstore"))
+
+k8s_resource("chart-eventstore-admin", port_forwards=2113)
 
 for svc in services:
     svc_name = svc["svc_name"]
@@ -71,10 +68,6 @@ for svc in services:
     # Tilt works better if we watch the bazel output tree
     # directly instead of the ./bazel-bin symlinks.
     bazel_bin = str(local("bazel info bazel-bin")).strip()
-
-    # Where go_binary puts the binary. You can determine this by building the
-    # go_binary target and reading the output log.
-
 
     # services/root-gateway/root-gateway.sh.runfiles/rosterpulse/services/root-gateway/root-gateway.sh
     binary_target_local = ""
