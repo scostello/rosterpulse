@@ -5,21 +5,32 @@ package graph
 
 import (
 	"context"
+	"fmt"
 	acct "github.com/scostello/rosterpulse/protos/accounts"
-	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/clients"
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/generated"
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/model"
+	"google.golang.org/grpc"
 )
 
 func (r *mutationResolver) CreateAccount(ctx context.Context, userid string) (*model.CreateAccountResponse, error) {
-	acctClient := clients.GetAccountsClient()
+	conn, err := grpc.Dial("accounts-service-dev:80", grpc.WithInsecure())
+	defer conn.Close()
+	if err != nil {
+		fmt.Println("Error dialing accounts-service: ", err)
+	}
+
+	acctClient := acct.NewAccountsClient(conn)
+
 	payload := &acct.CreateAccountRequest{
 		Userid: userid,
 	}
-	_, err := acctClient.CreateAccount(ctx, payload)
+
+	resp, err := acctClient.CreateAccount(ctx, payload)
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(fmt.Sprintf("response from accounts-service: %+v", resp))
 
 	return &model.CreateAccountResponse{Success: true}, nil
 }

@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "repositories",
+    srcs = ["accounts.go"],
+    importpath = "github.com/scostello/rosterpulse/services/accounts-service/repositories",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//services/accounts-service/repositories/events",
+        "@com_github_eventstore_eventstore_client_go//client",
+        "@com_github_eventstore_eventstore_client_go//messages",
+        "@com_github_eventstore_eventstore_client_go//streamrevision",
+        "@com_github_gofrs_uuid//:uuid",
+    ],
+)

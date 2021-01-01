@@ -11,8 +11,8 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//protos/accounts",
-        "//services/accounts-gateway/graph/clients",
         "//services/accounts-gateway/graph/generated",
         "//services/accounts-gateway/graph/model",
+        "@org_golang_google_grpc//:go_default_library",
     ],
 )

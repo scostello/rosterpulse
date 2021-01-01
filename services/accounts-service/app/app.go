@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	grpcServer "github.com/scostello/rosterpulse/services/accounts-service/grpc"
+	"github.com/scostello/rosterpulse/services/accounts-service/repositories"
 	"google.golang.org/grpc"
 	"net"
 	"net/http"
@@ -21,7 +22,8 @@ func NewApp() *App {
 func (a *App) Initialize() {
 	a.Router = mux.NewRouter()
 	a.GrpcServer = grpc.NewServer()
-	grpcServer.RegisterResources(a.GrpcServer)
+	repo := repositories.NewAccountsRepository()
+	grpcServer.RegisterResources(a.GrpcServer, repo)
 }
 
 func (a *App) Run() {
