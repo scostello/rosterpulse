@@ -15,5 +15,5 @@ message AccountItem {
 }
 
 message CreateAccountResponse {
-    AccountItem account = 1;
+  AccountItem account = 1;
 }

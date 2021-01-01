@@ -1,6 +1,7 @@
 package app
 
 import (
+	"context"
 	"fmt"
 	"github.com/gorilla/mux"
 	grpcServer "github.com/scostello/rosterpulse/services/accounts-service/grpc"
@@ -23,6 +24,7 @@ func (a *App) Initialize() {
 	a.Router = mux.NewRouter()
 	a.GrpcServer = grpc.NewServer()
 	repo := repositories.NewAccountsRepository()
+	repo.ListenToCreateAccountCommands(context.Background())
 	grpcServer.RegisterResources(a.GrpcServer, repo)
 }
 
