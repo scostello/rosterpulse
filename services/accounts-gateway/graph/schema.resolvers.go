@@ -6,13 +6,14 @@ package graph
 import (
 	"context"
 	"fmt"
+
 	acct "github.com/scostello/rosterpulse/protos/accounts"
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/generated"
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/model"
 	"google.golang.org/grpc"
 )
 
-func (r *mutationResolver) CreateAccount(ctx context.Context, userid string) (*model.CreateAccountResponse, error) {
+func (r *mutationResolver) CreateAccount(ctx context.Context, username string) (*model.CreateAccountResponse, error) {
 	conn, err := grpc.Dial("accounts-service-dev:80", grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
@@ -22,7 +23,7 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, userid string) (*m
 	acctClient := acct.NewAccountsClient(conn)
 
 	payload := &acct.CreateAccountRequest{
-		Userid: userid,
+		Username: username,
 	}
 
 	resp, err := acctClient.CreateAccount(ctx, payload)

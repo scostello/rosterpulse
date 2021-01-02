@@ -7,7 +7,9 @@ go_library(
     visibility = ["//visibility:public"],
     deps = [
         "//protos/accounts",
+        "//services/accounts-service/models",
         "//services/accounts-service/repositories/interfaces",
+        "@com_github_gofrs_uuid//:uuid",
         "@org_golang_google_grpc//:go_default_library",
     ],
 )

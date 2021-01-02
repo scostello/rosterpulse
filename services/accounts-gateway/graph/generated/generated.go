@@ -55,7 +55,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAccount func(childComplexity int, userid string) int
+		CreateAccount func(childComplexity int, username string) int
 	}
 
 	Query struct {
@@ -78,7 +78,7 @@ type EntityResolver interface {
 	FindUserByID(ctx context.Context, id string) (*model.User, error)
 }
 type MutationResolver interface {
-	CreateAccount(ctx context.Context, userid string) (*model.CreateAccountResponse, error)
+	CreateAccount(ctx context.Context, username string) (*model.CreateAccountResponse, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
@@ -128,7 +128,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateAccount(childComplexity, args["userid"].(string)), true
+		return e.complexity.Mutation.CreateAccount(childComplexity, args["username"].(string)), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -255,7 +255,7 @@ type CreateAccountResponse {
 }
 
 extend type Mutation {
-  createAccount(userid: String!): CreateAccountResponse!
+  createAccount(username: String!): CreateAccountResponse!
 }
 `, BuiltIn: false},
 	{Name: "federation/directives.graphql", Input: `
@@ -313,14 +313,14 @@ func (ec *executionContext) field_Mutation_createAccount_args(ctx context.Contex
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
-	if tmp, ok := rawArgs["userid"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userid"))
+	if tmp, ok := rawArgs["username"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
 		arg0, err = ec.unmarshalNString2string(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["userid"] = arg0
+	args["username"] = arg0
 	return args, nil
 }
 
@@ -494,7 +494,7 @@ func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateAccount(rctx, args["userid"].(string))
+		return ec.resolvers.Mutation().CreateAccount(rctx, args["username"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

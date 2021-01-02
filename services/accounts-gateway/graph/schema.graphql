@@ -12,5 +12,5 @@ type CreateAccountResponse {
 }
 
 extend type Mutation {
-  createAccount(userid: String!): CreateAccountResponse!
+  createAccount(username: String!): CreateAccountResponse!
 }

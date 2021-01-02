@@ -7,7 +7,7 @@ service Accounts {
 }
 
 message CreateAccountRequest {
-  string userid = 1;
+  string username = 1;
 }
 
 message AccountItem {

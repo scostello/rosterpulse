@@ -6,8 +6,11 @@ go_library(
     importpath = "github.com/scostello/rosterpulse/services/accounts-service/repositories",
     visibility = ["//visibility:public"],
     deps = [
+        "//services/accounts-service/models",
+        "//services/accounts-service/repositories/commands",
         "//services/accounts-service/repositories/events",
         "@com_github_eventstore_eventstore_client_go//client",
+        "@com_github_eventstore_eventstore_client_go//client/filtering",
         "@com_github_eventstore_eventstore_client_go//messages",
         "@com_github_eventstore_eventstore_client_go//position",
         "@com_github_eventstore_eventstore_client_go//streamrevision",

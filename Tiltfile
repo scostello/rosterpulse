@@ -15,6 +15,7 @@ services = [
         "port_forward": ["40000:40000"],
         "platform": "golang",
         "resource_deps": [],
+        "debug": True
     },
     {
         "svc_name": "channels-gateway",
@@ -106,7 +107,7 @@ for svc in services:
     )
 
     entrypoint = binary_target_container
-    if svc_name == "accounts-service":
+    if svc.get("debug") == True:
         entrypoint = [
             "/go/bin/dlv",
             "--listen=:40000",

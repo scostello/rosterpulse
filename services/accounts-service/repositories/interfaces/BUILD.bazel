@@ -5,4 +5,5 @@ go_library(
     srcs = ["accounts.go"],
     importpath = "github.com/scostello/rosterpulse/services/accounts-service/repositories/interfaces",
     visibility = ["//visibility:public"],
+    deps = ["//services/accounts-service/models"],
 )

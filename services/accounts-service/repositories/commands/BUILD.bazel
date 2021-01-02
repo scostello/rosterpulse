@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "commands",
+    srcs = ["models.go"],
+    importpath = "github.com/scostello/rosterpulse/services/accounts-service/repositories/commands",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_gofrs_uuid//:uuid"],
+)

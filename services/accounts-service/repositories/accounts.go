@@ -5,10 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/EventStore/EventStore-Client-Go/client"
+	"github.com/EventStore/EventStore-Client-Go/client/filtering"
 	"github.com/EventStore/EventStore-Client-Go/messages"
 	"github.com/EventStore/EventStore-Client-Go/position"
 	"github.com/EventStore/EventStore-Client-Go/streamrevision"
 	"github.com/gofrs/uuid"
+	"github.com/scostello/rosterpulse/services/accounts-service/models"
+	"github.com/scostello/rosterpulse/services/accounts-service/repositories/commands"
 	"github.com/scostello/rosterpulse/services/accounts-service/repositories/events"
 	"time"
 )
@@ -36,14 +39,14 @@ func NewAccountsRepository() *AccountsRepository {
 	return &AccountsRepository{}
 }
 
-func (repo *AccountsRepository) CreateAccount(ctx context.Context) {
+func (repo *AccountsRepository) CreateAccount(ctx context.Context, account *models.AccountItem) {
 	eventid, err := uuid.NewV4()
 	if err != nil {
 		fmt.Println("Error creating event uuid: ", err)
 	}
 
-	event := &events.AccountCreated{Accountid: "123456"}
-	data, err := json.Marshal(event)
+	command := &commands.CreateAccount{Accountid: account.Accountid, Username: account.Username}
+	data, err := json.Marshal(command)
 	if err != nil {
 		fmt.Println("Error marshalling event data: ", err)
 	}
@@ -55,7 +58,7 @@ func (repo *AccountsRepository) CreateAccount(ctx context.Context) {
 		fmt.Println("Error marshalling event metadata: ", err)
 	}
 
-	testEvent := messages.ProposedEvent{
+	createAccount := messages.ProposedEvent{
 		EventID:      eventid,
 		EventType:    "create-account",
 		ContentType:  "application/octet-stream",
@@ -63,7 +66,7 @@ func (repo *AccountsRepository) CreateAccount(ctx context.Context) {
 		Data:         data,
 	}
 	proposedEvents := []messages.ProposedEvent{
-		testEvent,
+		createAccount,
 	}
 
 	err = esclient.Connect()
@@ -72,8 +75,8 @@ func (repo *AccountsRepository) CreateAccount(ctx context.Context) {
 		fmt.Println("Error dialing eventstoredb servers: ", err)
 	}
 
-	result, err := esclient.AppendToStream(ctx, "accounts", streamrevision.StreamRevisionAny, proposedEvents)
-	//result, err := esclient.AppendToStream(ctx, "accounts", streamrevision.NewStreamRevision(0), proposedEvents)
+	streamId := fmt.Sprintf("account-%s", account.Accountid.String())
+	result, err := esclient.AppendToStream(ctx, streamId, streamrevision.StreamRevisionAny, proposedEvents)
 	if err != nil {
 		fmt.Println("Error appending event to stream: ", err)
 	}
@@ -106,11 +109,13 @@ func (repo *AccountsRepository) ListenToCreateAccountCommands(ctx context.Contex
 		fmt.Println("Error dialing eventstoredb servers: ", err)
 	}
 
-	subscription, err := esclient.SubscribeToStream(
+	accountsFilter := filtering.NewStreamPrefixFilter([]string{"account-"})
+
+	subscription, err := esclient.SubscribeToAllFiltered(
 		ctx,
-		"accounts",
-		uint64(0),
+		position.StartPosition,
 		false,
+		filtering.NewDefaultSubscriptionFilterOptions(accountsFilter),
 		handleCommand,
 		handleCheckpointReached,
 		handleSubscriptionDropped,
@@ -118,7 +123,6 @@ func (repo *AccountsRepository) ListenToCreateAccountCommands(ctx context.Contex
 	if err != nil {
 		fmt.Println("Error creating subscription: ", err)
 	}
-
 
 	err = subscription.Start()
 	if err != nil {
