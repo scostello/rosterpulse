@@ -148,8 +148,8 @@ load(
 container_pull(
     name = "go_base_image",
     registry = "docker.io",
-    repository = "library/golang",
-    tag = "alpine",
+    repository = "scostello/golang",
+    tag = "1.15.4-debug",
 )
 
 # ************************************

@@ -12,7 +12,7 @@ services = [
     },
     {
         "svc_name": "accounts-service",
-        "port_forward": [],
+        "port_forward": ["40000:40000"],
         "platform": "golang",
         "resource_deps": [],
     },
@@ -105,13 +105,25 @@ for svc in services:
         deps    = bazel_sourcefile_deps(binary_target),
     )
 
+    entrypoint = binary_target_container
+    if svc_name == "accounts-service":
+        entrypoint = [
+            "/go/bin/dlv",
+            "--listen=:40000",
+            "--headless=true",
+            "--api-version=2",
+            "--accept-multiclient",
+            "exec",
+            binary_target_container
+        ]
+
     custom_build_with_restart(
         ref         = "{svc_name}-dev".format(svc_name = svc_name),
         command     = ("bazel run --platforms={platform} {image_target} -- --norun && " +
                         "docker tag {bazel_image} $EXPECTED_REF").format(platform=svc_platform, image_target=image_target, bazel_image=bazel_image),
         deps        = [binary_target_local],
         # entrypoint  = "sleep 100000", # binary_target_container,
-        entrypoint  = binary_target_container,
+        entrypoint  = entrypoint,
         live_update = [
             sync(binary_target_local, binary_target_container)
         ],
