@@ -182,7 +182,7 @@ tools_repositories()
 # ************************************
 http_archive(
     name = "com_google_protobuf",
-    # sha256 = "9748c0d90e54ea09e5e75fb7fac16edce15d2028d4356f32211cfa3c0e956564",
+    sha256 = "31467dc98fb43e28888357dea67b487cf9f582a47a11e3af0cfebbb0e5f461e5",
     strip_prefix = "protobuf-9647a7c2356a9529754c07235a2877ee676c2fd0",
     urls = ["https://github.com/protocolbuffers/protobuf/archive/9647a7c2356a9529754c07235a2877ee676c2fd0.tar.gz"],
 )
@@ -220,3 +220,9 @@ load(
 )
 
 apple_support_dependencies()
+
+http_archive(
+    name = "rules_pods",
+    sha256 = "31b3ee6c32c6047008e6820af36573019ac7a25ea421222c638277984e9cde27",
+    urls = ["https://github.com/pinterest/PodToBUILD/releases/download/3.4.1-ea20598f/PodToBUILD.zip"],
+)
