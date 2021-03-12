@@ -196,8 +196,8 @@ protobuf_deps()
 # ************************************
 http_archive(
     name = "build_bazel_rules_apple",
-    sha256 = "a41a75c291c69676b9974458ceee09aea60cee0e1ee282e27cdc90b679dfd30f",
-    url = "https://github.com/bazelbuild/rules_apple/releases/download/0.21.2/rules_apple.0.21.2.tar.gz",
+    strip_prefix = "rules_apple-8562971108c11931618a220731c335e9fab9fb49",
+    urls = ["https://github.com/bazelbuild/rules_apple/archive/8562971108c11931618a220731c335e9fab9fb49.tar.gz"],
 )
 
 load(
@@ -208,6 +208,22 @@ load(
 apple_rules_dependencies()
 
 load(
+    "@build_bazel_apple_support//lib:repositories.bzl",
+    "apple_support_dependencies",
+)
+
+apple_support_dependencies()
+
+# ************************************
+# Swift
+# ************************************
+http_archive(
+    name = "build_bazel_rules_swift",
+    sha256 = "d0e5f888b2ccce42c92e6d4686b5507b4230462627f965f9d39862e11ae9fb35",
+    url = "https://github.com/bazelbuild/rules_swift/releases/download/0.18.0/rules_swift.0.18.0.tar.gz",
+)
+
+load(
     "@build_bazel_rules_swift//swift:repositories.bzl",
     "swift_rules_dependencies",
 )
@@ -215,14 +231,8 @@ load(
 swift_rules_dependencies()
 
 load(
-    "@build_bazel_apple_support//lib:repositories.bzl",
-    "apple_support_dependencies",
+    "@build_bazel_rules_swift//swift:extras.bzl",
+    "swift_rules_extra_dependencies",
 )
 
-apple_support_dependencies()
-
-http_archive(
-    name = "rules_pods",
-    sha256 = "31b3ee6c32c6047008e6820af36573019ac7a25ea421222c638277984e9cde27",
-    urls = ["https://github.com/pinterest/PodToBUILD/releases/download/3.4.1-ea20598f/PodToBUILD.zip"],
-)
+swift_rules_extra_dependencies()
