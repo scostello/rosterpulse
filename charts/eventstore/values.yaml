@@ -3,10 +3,10 @@
 
 ## Event Store image repository.
 ## ref: https://hub.docker.com/r/eventstore/eventstore/
-image: eventstore/eventstore
+image: scostello/eventstore
 ##
 ## Event Store image tag
-imageTag: 20.10.0-bionic
+imageTag: 21.2.0-bionic
 ##
 ## Specify a imagePullPolicy
 ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -52,7 +52,7 @@ admin:
   ##
   ## NGINX image used for admin interface proxy.
   proxyImage: nginx
-  proxyImageTag: latest
+  proxyImageTag: 1.18.0 #latest
   ##
   ## The dns resolver which is being used in the cluster (e.g., kube-dns, coredns)
   dnsResolver: kube-dns
