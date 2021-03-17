@@ -11,6 +11,7 @@ require (
 	github.com/gorilla/mux v1.6.1
 	github.com/gotestyourself/gotestyourself v2.2.0+incompatible // indirect
 	github.com/ory/dockertest v3.3.5+incompatible // indirect
+	github.com/rs/zerolog v1.20.0
 	github.com/vektah/gqlparser/v2 v2.1.0
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
