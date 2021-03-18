@@ -1,8 +1,13 @@
 package internal
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/rs/zerolog"
 	"io"
+	"path"
+	"runtime"
+	"time"
 )
 
 type LogLevel int
@@ -10,6 +15,9 @@ type LogLevel int
 const (
 	Info LogLevel = iota
 	Debug
+	Error
+	Warn
+	Fatal
 )
 
 type (
@@ -20,107 +28,146 @@ type (
 		WithMetadata(metadata LogFields) FluentLogger
 		WithError(error error) FluentLogger
 		WithScope(scope string) FluentLogger
-		Info(message string) FluentLogger
-		Debug(message string) FluentLogger
-		Error(message string) FluentLogger
-		Warn(message string) FluentLogger
+		Info(message string)
+		Debug(message string)
+		Error(message string)
+		Warn(message string)
 	}
-
-	emittingFluentLogger struct {
-		emitter emitter
-		logData logData
-	}
-
-	//extraFields map[string]interface{}
 
 	logData struct {
 		//extraFields
-		appID      string
-		appVersion string
-		//appMetadata map[string]interface{}
+		appID       string
+		appVersion  string
+		appMetadata map[string]interface{}
 		//tracingID   string
-		//timestamp   time.Time
-		//message     string
-		//exception   error
+		timestamp time.Time
+		message   string
+		exception error
 	}
 
 	emitter interface {
 		emit(level LogLevel, data logData)
 	}
 
-	zerologEmitter struct {
-		zerologger *zerolog.Logger
+	fluentLogger struct {
+		emitter emitter
+		logData logData
 	}
 
-	fluentLogger struct {
-		appID      string
-		appVersion string
-		logEmitter emitter
+	zerologEmitter struct {
+		zerologger *zerolog.Logger
 	}
 )
 
 func New(w io.Writer, appID, appVersion string) *fluentLogger {
-	//logger := zerolog.New(formatters.NewPrettyFormat())
 	zeroLogger := zerolog.New(w)
-	logger := &fluentLogger{
-		appID:      appID,
-		appVersion: appVersion,
-		logEmitter: &zerologEmitter{zerologger: &zeroLogger},
+	return &fluentLogger{
+		emitter: &zerologEmitter{zerologger: &zeroLogger},
+		logData: logData{appID: appID, appVersion: appVersion},
 	}
-	return logger
 }
 
-func (e *fluentLogger) WithFields(logFields LogFields) FluentLogger {
-	return e
+func (l *fluentLogger) WithFields(logFields LogFields) FluentLogger {
+	l.logData.appMetadata = shallowMergeMaps(l.logData.appMetadata, logFields)
+	return l
 }
 
-func (e *fluentLogger) WithMetadata(metadata LogFields) FluentLogger {
-	return e
+func (l *fluentLogger) WithMetadata(metadata LogFields) FluentLogger {
+	l.WithFields(metadata)
+	return l
 }
 
-func (e *fluentLogger) WithError(error error) FluentLogger {
-	return e
+func (l *fluentLogger) WithError(error error) FluentLogger {
+	l.logData.exception = error
+	return l
 }
 
-func (e *fluentLogger) WithScope(scope string) FluentLogger {
-	return e
+func (l *fluentLogger) WithScope(scope string) FluentLogger {
+	return l
 }
 
-func (e *fluentLogger) Info(message string) FluentLogger {
-	data := logData{appID: "What-UP", appVersion: "0.1.0"}
-	e.logEmitter.emit(Info, data)
-	return e
+func (l *fluentLogger) Info(message string) {
+	l.logData.message = message
+	l.emitter.emit(Info, l.logData)
 }
 
-func (e *fluentLogger) Debug(message string) FluentLogger {
-	data := logData{appID: "What-UP", appVersion: "0.1.0"}
-	e.logEmitter.emit(Debug, data)
-	return e
+func (l *fluentLogger) Debug(message string) {
+	l.logData.message = message
+	l.emitter.emit(Debug, l.logData)
 }
 
-func (e *fluentLogger) Error(message string) FluentLogger {
-	return e
+func (l *fluentLogger) Error(message string) {
+	l.logData.message = message
+	l.emitter.emit(Error, l.logData)
 }
 
-func (e *fluentLogger) Warn(message string) FluentLogger {
-	return e
+func (l *fluentLogger) Warn(message string) {
+	l.logData.message = message
+	l.emitter.emit(Warn, l.logData)
+}
+
+type SourceHook struct{}
+
+func (h SourceHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
+	if pc, file, line, ok := runtime.Caller(5); ok {
+		funcName := runtime.FuncForPC(pc).Name()
+
+		e.Str("source", fmt.Sprintf("%s:%v:%s", path.Base(file), line, path.Base(funcName)))
+	}
+}
+
+type TimestampHook struct{}
+
+func (h TimestampHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
+	e.Time("timestampUTC", time.Now().UTC())
 }
 
 func (e *zerologEmitter) emit(level LogLevel, data logData) {
-	event := e.zerologger.Info()
+	zero := e.zerologger.
+		Hook(SourceHook{}).
+		Hook(TimestampHook{})
+	event := zero.Info()
 	if level == Debug {
-		event = e.zerologger.Debug()
+		event = zero.Debug()
 	}
+	if level == Warn {
+		event = zero.Warn()
+	}
+	if level == Error {
+		event = zero.Error()
+	}
+
+	var appMetadata map[string]interface{}
+	if data.appMetadata != nil {
+		appMetadata = data.appMetadata
+	} else {
+		appMetadata = map[string]interface{}{}
+	}
+
+	metadataBytes, err := encodeData(appMetadata)
+	if err != nil {
+		metadataEncodingErr := map[string]string{"unmarshal.error": err.Error()}
+		metadataBytes, _ = json.Marshal(metadataEncodingErr)
+	}
+
+	if data.exception != nil {
+		event.Err(data.exception)
+	}
+
 	entry := event.
 		Str("appID", data.appID).
 		Str("appVersion", data.appVersion).
-		Str("foo", "bar")
-	//Time("timestampUTC", data.timestamp)
-
+		Str("foo", "bar").
+		Str("message", data.message).
+		RawJSON("appMetadata", metadataBytes)
 	entry.Send()
 }
 
-func mergeMaps(a, b map[string]interface{}) map[string]interface{} {
+func encodeData(data map[string]interface{}) ([]byte, error) {
+	return json.Marshal(data)
+}
+
+func shallowMergeMaps(a, b map[string]interface{}) map[string]interface{} {
 	newMap := copyMap(a)
 	for key, value := range b {
 		newMap[key] = value
