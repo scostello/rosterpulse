@@ -6,6 +6,7 @@ go_library(
     importpath = "github.com/scostello/rosterpulse/services/accounts-service/grpc",
     visibility = ["//visibility:public"],
     deps = [
+        "//libraries/logger-go/pkg",
         "//protos/accounts",
         "//services/accounts-service/models",
         "//services/accounts-service/repositories/interfaces",

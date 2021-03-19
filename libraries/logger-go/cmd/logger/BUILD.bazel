@@ -5,6 +5,7 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/scostello/rosterpulse/libraries/logger-go/cmd/logger",
     visibility = ["//visibility:private"],
+    deps = ["//libraries/logger-go/pkg"],
 )
 
 go_binary(

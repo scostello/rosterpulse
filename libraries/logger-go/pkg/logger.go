@@ -1,4 +1,4 @@
-package internal
+package pkg
 
 import (
 	"encoding/json"
@@ -59,7 +59,7 @@ type (
 	}
 )
 
-func New(w io.Writer, appID, appVersion string) *fluentLogger {
+func New(w io.Writer, appID, appVersion string) FluentLogger {
 	zeroLogger := zerolog.New(w)
 	return &fluentLogger{
 		emitter: &zerologEmitter{zerologger: &zeroLogger},
@@ -157,7 +157,6 @@ func (e *zerologEmitter) emit(level LogLevel, data logData) {
 	entry := event.
 		Str("appID", data.appID).
 		Str("appVersion", data.appVersion).
-		Str("foo", "bar").
 		Str("message", data.message).
 		RawJSON("appMetadata", metadataBytes)
 	entry.Send()

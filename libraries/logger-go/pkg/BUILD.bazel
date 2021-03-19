@@ -10,3 +10,11 @@ go_library(
         "@com_github_rs_zerolog//:zerolog",
     ],
 )
+
+go_library(
+    name = "pkg",
+    srcs = ["logger.go"],
+    importpath = "github.com/scostello/rosterpulse/libraries/logger-go/pkg",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_rs_zerolog//:zerolog"],
+)
