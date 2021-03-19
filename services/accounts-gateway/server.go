@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 
@@ -30,7 +29,8 @@ func main() {
 	http.Handle("/query", srv)
 
 	entry.Info(fmt.Sprintf("connect to http://localhost:%s/ for GraphQL playground", port))
-
-	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		entry.WithError(err).Error("failed to start http server")
+	}
 }
