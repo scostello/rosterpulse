@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofrs/uuid"
+	logger "github.com/scostello/rosterpulse/libraries/logger-go/pkg"
 	pb "github.com/scostello/rosterpulse/protos/accounts"
 	"github.com/scostello/rosterpulse/services/accounts-service/models"
 	"github.com/scostello/rosterpulse/services/accounts-service/repositories/interfaces"
@@ -12,18 +13,19 @@ import (
 
 type AccountsServer struct{
 	Persister interfaces.AccountsPersister
+	logger logger.FluentLogger
 }
 
-func RegisterResources(grpcServer *grpc.Server, persister interfaces.AccountsPersister) {
-	pb.RegisterAccountsServer(grpcServer, &AccountsServer{ Persister: persister})
+func RegisterResources(logger logger.FluentLogger, grpcServer *grpc.Server, persister interfaces.AccountsPersister) {
+	pb.RegisterAccountsServer(grpcServer, &AccountsServer{ Persister: persister, logger: logger })
 }
 
 func (s *AccountsServer) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
-	fmt.Printf("received a request! %v", req)
+	s.logger.Info(fmt.Sprintf("received a request! %v", req))
 
 	accountid, err := uuid.NewV4()
 	if err != nil {
-		fmt.Println("Error creating event uuid: ", err)
+		s.logger.WithError(err).Error("Error creating event uuid")
 	}
 
 	s.Persister.CreateAccount(ctx, &models.AccountItem{
