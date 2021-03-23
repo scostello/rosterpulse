@@ -5,7 +5,9 @@
 //  Created by Sean Costello on 3/12/21.
 //
 
+import Apollo
 import UIKit
+
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -14,6 +16,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        Network.shared.apollo.fetch(query: TopProductsQuery()) { result in
+            switch result {
+            case .success(let graphQLResult):
+                print("Success! Result: \(graphQLResult)")
+            case .failure(let error):
+                print("Failure! Error: \(error)")
+            }
+        }
         return true
     }
 
