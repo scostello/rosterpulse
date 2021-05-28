@@ -1,4 +1,4 @@
-import moment from 'moment';
+import * as moment from 'moment';
 
 const identity = <T>(id: T) => id;
 
@@ -10,8 +10,8 @@ const DefaultDateTimeFormat = 'YYYY-MM-DDTHH:mm:ss.SSSSSSSS';
 
 const datetime = {
   DefaultDateTimeFormat,
-  default: () => moment.utc(moment()).format(DefaultDateTimeFormat),
-  format: (format: string = DefaultDateTimeFormat) => moment.utc(moment()).format(format),
+  default: () => moment.utc(moment.now()).format(DefaultDateTimeFormat),
+  format: (format: string = DefaultDateTimeFormat) => moment.utc(moment.now()).format(format),
 };
 
 export {
