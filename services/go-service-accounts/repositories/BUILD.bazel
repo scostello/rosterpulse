@@ -1,0 +1,20 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "repositories",
+    srcs = ["accounts.go"],
+    importpath = "github.com/scostello/rosterpulse/services/go-service-accounts/repositories",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//libraries/logger-go/pkg",
+        "//services/go-service-accounts/models",
+        "//services/go-service-accounts/repositories/commands",
+        "//services/go-service-accounts/repositories/events",
+        "@com_github_eventstore_eventstore_client_go//client",
+        "@com_github_eventstore_eventstore_client_go//client/filtering",
+        "@com_github_eventstore_eventstore_client_go//messages",
+        "@com_github_eventstore_eventstore_client_go//position",
+        "@com_github_eventstore_eventstore_client_go//streamrevision",
+        "@com_github_gofrs_uuid//:uuid",
+    ],
+)

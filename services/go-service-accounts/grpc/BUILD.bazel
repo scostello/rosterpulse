@@ -1,0 +1,16 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "grpc",
+    srcs = ["accounts.go"],
+    importpath = "github.com/scostello/rosterpulse/services/go-service-accounts/grpc",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//libraries/logger-go/pkg",
+        "//protos/accounts",
+        "//services/go-service-accounts/models",
+        "//services/go-service-accounts/repositories/interfaces",
+        "@com_github_gofrs_uuid//:uuid",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

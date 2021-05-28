@@ -1,0 +1,31 @@
+load("//tools:ts_library.bzl", "ts_library")
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+load("@io_bazel_rules_docker//nodejs:image.bzl", "nodejs_image")
+
+package(default_visibility = ["//visibility:public"])
+
+_DEPENDENCIES = [
+    "@npm//@types/node",
+    "@npm//@apollo/gateway",
+    "@npm//apollo-server",
+]
+
+ts_library(
+    name = "ts-gateway-root_lib",
+    srcs = glob(
+        ["src/**/*.ts"],
+    ),
+    module_name = "@rosterpulse/gateway",
+    deps = ["//libraries/logger-ts"] + _DEPENDENCIES,
+)
+
+nodejs_binary(
+    name = "ts-gateway-root",
+    data = [":ts-gateway-root_lib"],
+    entry_point = "src/index.ts",
+)
+
+nodejs_image(
+    name = "image",
+    binary = ":ts-gateway-root",
+)

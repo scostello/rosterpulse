@@ -1,0 +1,9 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "interfaces",
+    srcs = ["accounts.go"],
+    importpath = "github.com/scostello/rosterpulse/services/go-service-accounts/repositories/interfaces",
+    visibility = ["//visibility:public"],
+    deps = ["//services/go-service-accounts/models"],
+)
