@@ -1,5 +1,6 @@
 load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
 load("//tools:ts_library.bzl", "ts_library")
+load("//tools:jest.bzl", "jest_test")
 
 package(default_visibility = ["//visibility:public"])
 
@@ -33,5 +34,18 @@ rollup_bundle(
         "@npm//@rollup/plugin-node-resolve",
         "@npm//rollup-plugin-node-polyfills",
         "@npm//rollup-plugin-sourcemaps",
+    ],
+)
+
+jest_test(
+    name = "test",
+    srcs = glob(["src/**/*.ts"]),
+    jest_config = ":jest.config.js",
+    deps = _DEPENDENCIES + [
+        "@npm//@babel/core",
+        "@npm//@babel/preset-env",
+        "@npm//@jest/transform",
+        "@npm//babel-jest",
+#        "@npm//jest",
     ],
 )
