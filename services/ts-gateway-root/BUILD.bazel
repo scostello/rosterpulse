@@ -16,7 +16,7 @@ ts_library(
         ["src/**/*.ts"],
     ),
     module_name = "@rosterpulse/gateway",
-    deps = ["//libraries/logger-ts"] + _DEPENDENCIES,
+    deps = ["//libraries/ts-logger"] + _DEPENDENCIES,
 )
 
 nodejs_binary(

@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gorilla/mux"
-	logger "github.com/scostello/rosterpulse/libraries/logger-go/pkg"
+	logger "github.com/scostello/rosterpulse/libraries/go-logger/pkg"
 	grpcServer "github.com/scostello/rosterpulse/services/go-service-accounts/grpc"
 	"github.com/scostello/rosterpulse/services/go-service-accounts/repositories"
 	"google.golang.org/grpc"

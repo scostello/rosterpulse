@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/gofrs/uuid"
-	logger "github.com/scostello/rosterpulse/libraries/logger-go/pkg"
+	logger "github.com/scostello/rosterpulse/libraries/go-logger/pkg"
 	pb "github.com/scostello/rosterpulse/protos/accounts"
 	"github.com/scostello/rosterpulse/services/go-service-accounts/models"
 	"github.com/scostello/rosterpulse/services/go-service-accounts/repositories/interfaces"

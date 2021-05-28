@@ -7,7 +7,7 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	logger "github.com/scostello/rosterpulse/libraries/logger-go/pkg"
+	logger "github.com/scostello/rosterpulse/libraries/go-logger/pkg"
 	"github.com/scostello/rosterpulse/services/go-gateway-accounts/graph"
 	"github.com/scostello/rosterpulse/services/go-gateway-accounts/graph/generated"
 )

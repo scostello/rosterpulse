@@ -10,7 +10,7 @@ import (
 	"github.com/EventStore/EventStore-Client-Go/position"
 	"github.com/EventStore/EventStore-Client-Go/streamrevision"
 	"github.com/gofrs/uuid"
-	logger "github.com/scostello/rosterpulse/libraries/logger-go/pkg"
+	logger "github.com/scostello/rosterpulse/libraries/go-logger/pkg"
 	"github.com/scostello/rosterpulse/services/go-service-accounts/models"
 	"github.com/scostello/rosterpulse/services/go-service-accounts/repositories/commands"
 	"github.com/scostello/rosterpulse/services/go-service-accounts/repositories/events"

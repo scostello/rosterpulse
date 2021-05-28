@@ -7,7 +7,7 @@ go_library(
     importpath = "github.com/scostello/rosterpulse/services/go-gateway-accounts",
     visibility = ["//visibility:private"],
     deps = [
-        "//libraries/logger-go/pkg",
+        "//libraries/go-logger/pkg",
         "//services/go-gateway-accounts/graph",
         "//services/go-gateway-accounts/graph/generated",
         "@com_github_99designs_gqlgen//graphql/handler",
