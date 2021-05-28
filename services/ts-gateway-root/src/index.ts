@@ -1,5 +1,5 @@
 import { ApolloGateway } from '@apollo/gateway';
-import { createLogger } from '@rosterpulse/logger-ts';
+import { createLogger } from '@rosterpulse/ts-logger';
 import { ApolloServer } from 'apollo-server';
 
 const gateway = new ApolloGateway({

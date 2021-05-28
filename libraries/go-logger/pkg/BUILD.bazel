@@ -3,10 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_library")
 go_library(
     name = "internal",
     srcs = ["logger.go"],
-    importpath = "github.com/scostello/rosterpulse/libraries/logger-go/internal",
-    visibility = ["//libraries/logger-go:__subpackages__"],
+    importpath = "github.com/scostello/rosterpulse/libraries/go-logger/internal",
+    visibility = ["//libraries/go-logger:__subpackages__"],
     deps = [
-        "//libraries/logger-go/internal/formatters",
         "@com_github_rs_zerolog//:zerolog",
     ],
 )
@@ -14,7 +13,7 @@ go_library(
 go_library(
     name = "pkg",
     srcs = ["logger.go"],
-    importpath = "github.com/scostello/rosterpulse/libraries/logger-go/pkg",
+    importpath = "github.com/scostello/rosterpulse/libraries/go-logger/pkg",
     visibility = ["//visibility:public"],
     deps = ["@com_github_rs_zerolog//:zerolog"],
 )

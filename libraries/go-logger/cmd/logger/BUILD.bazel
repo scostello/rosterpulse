@@ -3,9 +3,9 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 go_library(
     name = "logger_lib",
     srcs = ["main.go"],
-    importpath = "github.com/scostello/rosterpulse/libraries/logger-go/cmd/logger",
+    importpath = "github.com/scostello/rosterpulse/libraries/go-logger/cmd/logger",
     visibility = ["//visibility:private"],
-    deps = ["//libraries/logger-go/pkg"],
+    deps = ["//libraries/go-logger/pkg"],
 )
 
 go_binary(

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/scostello/rosterpulse/libraries/logger-go/pkg"
+	"github.com/scostello/rosterpulse/libraries/go-logger/pkg"
 )
 
 func main() {
