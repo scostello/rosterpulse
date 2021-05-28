@@ -5,7 +5,7 @@ load("//tools:jest.bzl", "jest_test")
 package(default_visibility = ["//visibility:public"])
 
 _DEPENDENCIES = [
-    "@npm//@types/node",
+    "@npm//@types",
     "@npm//colors",
     "@npm//logform",
     "@npm//moment",
@@ -46,6 +46,6 @@ jest_test(
         "@npm//@babel/preset-env",
         "@npm//@jest/transform",
         "@npm//babel-jest",
-#        "@npm//jest",
+        "@npm//ts-jest",
     ],
 )

@@ -5,4 +5,13 @@ module.exports = {
   transform: {
     "^.+\\.(js|ts)?$": 'ts-jest',
   },
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        esModuleInterop: true,
+        importHelpers: true,
+        allowSyntheticDefaultImports: true,
+      },
+    },
+  },
 };
