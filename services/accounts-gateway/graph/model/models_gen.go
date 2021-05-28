@@ -2,6 +2,21 @@
 
 package model
 
+import (
+	"fmt"
+	"io"
+	"strconv"
+	"time"
+)
+
+type AccountInput struct {
+	Type                   AccountType `json:"type"`
+	Name                   string      `json:"name"`
+	Email                  string      `json:"email"`
+	Clientcreateduuid      *string     `json:"clientcreateduuid"`
+	Clientcreatedtimestamp time.Time   `json:"clientcreatedtimestamp"`
+}
+
 type CreateAccountResponse struct {
 	Success bool `json:"success"`
 }
@@ -12,3 +27,48 @@ type User struct {
 }
 
 func (User) IsEntity() {}
+
+type AccountType string
+
+const (
+	AccountTypeIndividual   AccountType = "individual"
+	AccountTypeDepartment   AccountType = "department"
+	AccountTypeCompany      AccountType = "company"
+	AccountTypeOrganization AccountType = "organization"
+)
+
+var AllAccountType = []AccountType{
+	AccountTypeIndividual,
+	AccountTypeDepartment,
+	AccountTypeCompany,
+	AccountTypeOrganization,
+}
+
+func (e AccountType) IsValid() bool {
+	switch e {
+	case AccountTypeIndividual, AccountTypeDepartment, AccountTypeCompany, AccountTypeOrganization:
+		return true
+	}
+	return false
+}
+
+func (e AccountType) String() string {
+	return string(e)
+}
+
+func (e *AccountType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = AccountType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid AccountType", str)
+	}
+	return nil
+}
+
+func (e AccountType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}

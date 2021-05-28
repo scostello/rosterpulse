@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (r *mutationResolver) CreateAccount(ctx context.Context, username string) (*model.CreateAccountResponse, error) {
+func (r *mutationResolver) CreateAccount(ctx context.Context, input model.AccountInput) (*model.CreateAccountResponse, error) {
 	conn, err := grpc.Dial("accounts-service-dev:80", grpc.WithInsecure())
 	defer conn.Close()
 	if err != nil {
@@ -23,7 +23,8 @@ func (r *mutationResolver) CreateAccount(ctx context.Context, username string) (
 	acctClient := acct.NewAccountsClient(conn)
 
 	payload := &acct.CreateAccountRequest{
-		Username: username,
+		Name: input.Name,
+		Email: input.Email,
 	}
 
 	resp, err := acctClient.CreateAccount(ctx, payload)

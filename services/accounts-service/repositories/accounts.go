@@ -48,7 +48,7 @@ func (repo *AccountsRepository) CreateAccount(ctx context.Context, account *mode
 		repo.logger.WithError(err).Error("Error creating event uuid: ")
 	}
 
-	command := &commands.CreateAccount{Accountid: account.Accountid, Username: account.Username}
+	command := &commands.CreateAccount{Accountid: account.Accountid, Name: account.Name}
 	data, err := json.Marshal(command)
 	if err != nil {
 		repo.logger.WithError(err).Error("Error marshalling event data: ")

@@ -11,8 +11,6 @@ import (
 	"github.com/scostello/rosterpulse/services/accounts-gateway/graph/model"
 )
 
-type entityResolver struct{ *Resolver }
-
 func (r *entityResolver) FindUserByID(ctx context.Context, id string) (*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
@@ -20,3 +18,4 @@ func (r *entityResolver) FindUserByID(ctx context.Context, id string) (*model.Us
 // Entity returns generated.EntityResolver implementation.
 func (r *Resolver) Entity() generated.EntityResolver { return &entityResolver{r} }
 
+type entityResolver struct{ *Resolver }

@@ -11,13 +11,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-type AccountsServer struct{
+type AccountsServer struct {
 	Persister interfaces.AccountsPersister
-	logger logger.FluentLogger
+	logger    logger.FluentLogger
 }
 
 func RegisterResources(logger logger.FluentLogger, grpcServer *grpc.Server, persister interfaces.AccountsPersister) {
-	pb.RegisterAccountsServer(grpcServer, &AccountsServer{ Persister: persister, logger: logger })
+	pb.RegisterAccountsServer(grpcServer, &AccountsServer{Persister: persister, logger: logger})
 }
 
 func (s *AccountsServer) CreateAccount(ctx context.Context, req *pb.CreateAccountRequest) (*pb.CreateAccountResponse, error) {
@@ -30,7 +30,7 @@ func (s *AccountsServer) CreateAccount(ctx context.Context, req *pb.CreateAccoun
 
 	s.Persister.CreateAccount(ctx, &models.AccountItem{
 		Accountid: accountid,
-		Username:  req.Username,
+		Name:      req.Name,
 	})
 
 	account := &pb.AccountItem{Accountid: accountid.String()}
