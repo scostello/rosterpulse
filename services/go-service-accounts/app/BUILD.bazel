@@ -1,0 +1,15 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "app",
+    srcs = ["app.go"],
+    importpath = "github.com/scostello/rosterpulse/services/go-service-accounts/app",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//libraries/logger-go/pkg",
+        "//services/go-service-accounts/grpc",
+        "//services/go-service-accounts/repositories",
+        "@com_github_gorilla_mux//:mux",
+        "@org_golang_google_grpc//:go_default_library",
+    ],
+)

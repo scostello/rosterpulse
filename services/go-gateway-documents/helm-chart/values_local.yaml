@@ -1,0 +1,10 @@
+image:
+  repository: go-gateway-documents-dev
+
+livenessProbe:
+  enabled: false
+  path: /
+
+readinessProbe:
+  enabled: false
+  path: /

@@ -1,8 +1,0 @@
-load("@io_bazel_rules_go//go:def.bzl", "go_library")
-
-go_library(
-    name = "events",
-    srcs = ["models.go"],
-    importpath = "github.com/scostello/rosterpulse/services/accounts-service/repositories/events",
-    visibility = ["//visibility:public"],
-)

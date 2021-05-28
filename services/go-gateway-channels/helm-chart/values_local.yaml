@@ -1,0 +1,10 @@
+image:
+  repository: go-gateway-channels-dev
+
+livenessProbe:
+  enabled: false
+  path: /
+
+readinessProbe:
+  enabled: false
+  path: /

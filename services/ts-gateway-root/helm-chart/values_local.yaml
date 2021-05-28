@@ -1,0 +1,10 @@
+image:
+  repository: ts-gateway-root-dev
+
+livenessProbe:
+  enabled: false
+  path: /
+
+readinessProbe:
+  enabled: false
+  path: /
