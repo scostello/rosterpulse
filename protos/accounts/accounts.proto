@@ -6,8 +6,19 @@ service Accounts {
   rpc CreateAccount(CreateAccountRequest) returns (CreateAccountResponse) {}
 }
 
+enum AccountType {
+    individual = 0;
+    department = 1;
+    company = 2;
+    organization = 4;
+}
+
 message CreateAccountRequest {
-  string username = 1;
+  AccountType type = 1;
+  string name = 2;
+  string email = 3;
+  int64 clientcreatedtimestamp = 4;
+  string clientcreateduuid = 5;
 }
 
 message AccountItem {

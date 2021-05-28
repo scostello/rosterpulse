@@ -1,16 +1,33 @@
+scalar Time
+
 type User @key(fields: "id") {
   id: ID!
   username: String!
-}
-
-extend type Query {
-  me: User
 }
 
 type CreateAccountResponse {
   success: Boolean!
 }
 
+enum AccountType {
+  individual
+  department
+  company
+  organization
+}
+
+input AccountInput {
+  type: AccountType!
+  name: String!
+  email: String!
+  clientcreateduuid: String
+  clientcreatedtimestamp: Time!
+}
+
 extend type Mutation {
-  createAccount(username: String!): CreateAccountResponse!
+  createAccount(input: AccountInput!): CreateAccountResponse!
+}
+
+extend type Query {
+  me: User
 }

@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/99designs/gqlgen/graphql"
 	"github.com/99designs/gqlgen/graphql/introspection"
@@ -55,7 +56,7 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateAccount func(childComplexity int, username string) int
+		CreateAccount func(childComplexity int, input model.AccountInput) int
 	}
 
 	Query struct {
@@ -78,7 +79,7 @@ type EntityResolver interface {
 	FindUserByID(ctx context.Context, id string) (*model.User, error)
 }
 type MutationResolver interface {
-	CreateAccount(ctx context.Context, username string) (*model.CreateAccountResponse, error)
+	CreateAccount(ctx context.Context, input model.AccountInput) (*model.CreateAccountResponse, error)
 }
 type QueryResolver interface {
 	Me(ctx context.Context) (*model.User, error)
@@ -128,7 +129,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateAccount(childComplexity, args["username"].(string)), true
+		return e.complexity.Mutation.CreateAccount(childComplexity, args["input"].(model.AccountInput)), true
 
 	case "Query.me":
 		if e.complexity.Query.Me == nil {
@@ -241,21 +242,38 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "graph/schema.graphql", Input: `type User @key(fields: "id") {
+	{Name: "graph/schema.graphql", Input: `scalar Time
+
+type User @key(fields: "id") {
   id: ID!
   username: String!
-}
-
-extend type Query {
-  me: User
 }
 
 type CreateAccountResponse {
   success: Boolean!
 }
 
+enum AccountType {
+  individual
+  department
+  company
+  organization
+}
+
+input AccountInput {
+  type: AccountType!
+  name: String!
+  email: String!
+  clientcreateduuid: String
+  clientcreatedtimestamp: Time!
+}
+
 extend type Mutation {
-  createAccount(username: String!): CreateAccountResponse!
+  createAccount(input: AccountInput!): CreateAccountResponse!
+}
+
+extend type Query {
+  me: User
 }
 `, BuiltIn: false},
 	{Name: "federation/directives.graphql", Input: `
@@ -312,15 +330,15 @@ func (ec *executionContext) field_Entity_findUserByID_args(ctx context.Context, 
 func (ec *executionContext) field_Mutation_createAccount_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["username"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 model.AccountInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNAccountInput2githubᚗcomᚋscostelloᚋrosterpulseᚋservicesᚋaccountsᚑgatewayᚋgraphᚋmodelᚐAccountInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["username"] = arg0
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -494,7 +512,7 @@ func (ec *executionContext) _Mutation_createAccount(ctx context.Context, field g
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateAccount(rctx, args["username"].(string))
+		return ec.resolvers.Mutation().CreateAccount(rctx, args["input"].(model.AccountInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1880,6 +1898,58 @@ func (ec *executionContext) ___Type_ofType(ctx context.Context, field graphql.Co
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputAccountInput(ctx context.Context, obj interface{}) (model.AccountInput, error) {
+	var it model.AccountInput
+	var asMap = obj.(map[string]interface{})
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalNAccountType2githubᚗcomᚋscostelloᚋrosterpulseᚋservicesᚋaccountsᚑgatewayᚋgraphᚋmodelᚐAccountType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "clientcreateduuid":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clientcreateduuid"))
+			it.Clientcreateduuid, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "clientcreatedtimestamp":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clientcreatedtimestamp"))
+			it.Clientcreatedtimestamp, err = ec.unmarshalNTime2timeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -2372,6 +2442,21 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNAccountInput2githubᚗcomᚋscostelloᚋrosterpulseᚋservicesᚋaccountsᚑgatewayᚋgraphᚋmodelᚐAccountInput(ctx context.Context, v interface{}) (model.AccountInput, error) {
+	res, err := ec.unmarshalInputAccountInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNAccountType2githubᚗcomᚋscostelloᚋrosterpulseᚋservicesᚋaccountsᚑgatewayᚋgraphᚋmodelᚐAccountType(ctx context.Context, v interface{}) (model.AccountType, error) {
+	var res model.AccountType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNAccountType2githubᚗcomᚋscostelloᚋrosterpulseᚋservicesᚋaccountsᚑgatewayᚋgraphᚋmodelᚐAccountType(ctx context.Context, sel ast.SelectionSet, v model.AccountType) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNBoolean2bool(ctx context.Context, v interface{}) (bool, error) {
 	res, err := graphql.UnmarshalBoolean(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -2423,6 +2508,21 @@ func (ec *executionContext) unmarshalNString2string(ctx context.Context, v inter
 
 func (ec *executionContext) marshalNString2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
 	res := graphql.MarshalString(v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNTime2timeᚐTime(ctx context.Context, v interface{}) (time.Time, error) {
+	res, err := graphql.UnmarshalTime(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel ast.SelectionSet, v time.Time) graphql.Marshaler {
+	res := graphql.MarshalTime(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
