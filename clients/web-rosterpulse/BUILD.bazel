@@ -1,0 +1,33 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
+
+ts_config(
+    name = "tsconfig_lib",
+    src = "tsconfig.json",
+    deps = ["//:tsconfig"],
+)
+
+ts_project(
+    name = "webpack",
+    srcs = [
+        "config/webpack.config.ts",
+    ],
+    source_map = True,
+    tsconfig = ":tsconfig_lib",
+    deps = [
+        "@npm//@types/node",
+        "@npm//@babel/core",
+        "@npm//@babel/plugin-proposal-class-properties",
+        "@npm//@babel/plugin-proposal-object-rest-spread",
+        "@npm//@babel/plugin-proposal-optional-chaining",
+        "@npm//@babel/plugin-syntax-dynamic-import",
+        "@npm//@babel/plugin-transform-typescript",
+        "@npm//@babel/preset-react",
+        "@npm//@babel/preset-typescript",
+        "@npm//babel-loader",
+        "@npm//css-loader",
+        "@npm//file-loader",
+        "@npm//html-webpack-plugin",
+        "@npm//style-loader",
+        "@npm//webpack",
+    ],
+)
