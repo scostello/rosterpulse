@@ -39,6 +39,8 @@ _app_dependencies = [
     "@npm//react-dom",
 ]
 
+_app_sources = glob(["src/**/*.tsx"]);
+
 _webpack_dependencies = [
     "@npm//@babel/core",
     "@npm//@babel/plugin-proposal-class-properties",
@@ -49,6 +51,7 @@ _webpack_dependencies = [
     "@npm//@babel/preset-react",
     "@npm//@babel/preset-typescript",
     "@npm//babel-loader",
+    "@npm//esbuild-loader",
     "@npm//css-loader",
     "@npm//file-loader",
     "@npm//html-webpack-plugin",
@@ -59,18 +62,19 @@ _webpack_dependencies = [
 
 webpack(
     name = "bundle",
-    outs = ["app.bundle.js"],
+#    outs = ["app.bundle.js"],
+#    output_dir = True,
     args = [
         "build",
         "--config",
         "$(rootpath config/webpack.config.ts)",
-        "-o",
-        "$@",
+        "--mode=production",
+#        "-o",
+#        "$(execpath dist)",
     ],
-    data = _app_dependencies + _webpack_dependencies + [
+    data = _app_sources + _app_dependencies + _webpack_dependencies + [
         "config/index.html.ejs",
         "config/webpack.config.ts",
-        "src/index.tsx",
     ],
 )
 
@@ -82,9 +86,8 @@ webpack(
         "$(rootpath config/webpack.config.ts)",
         "--mode=development"
     ],
-    data = _app_dependencies + _webpack_dependencies + [
+    data = _app_sources + _app_dependencies + _webpack_dependencies + [
         "config/index.html.ejs",
         "config/webpack.config.ts",
-        "src/index.tsx",
     ],
 )

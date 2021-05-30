@@ -1,6 +1,7 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { WebpackOptionsNormalized } from 'webpack';
+import { ESBuildMinifyPlugin } from 'esbuild-loader';
 
 const cwd = path.resolve(process.cwd() || '', 'clients/web-rosterpulse');
 
@@ -21,6 +22,14 @@ const babelLoaderConfig = () => ({
   },
 });
 
+const esbuildLoaderConfig = () => ({
+  loader: 'esbuild-loader',
+  options: {
+    loader: 'tsx',
+    target: 'es2015',
+  },
+});
+
 const isProduction = (mode: WebpackOptionsNormalized['mode']) => mode === 'production';
 
 const devServer = (): WebpackOptionsNormalized['devServer'] => ({
@@ -37,14 +46,18 @@ function configFactory(env: { [key: string]: string }, argv: WebpackOptionsNorma
     devServer: isProduction(mode) ? {} : devServer(),
     devtool: isProduction(mode) ? 'source-map' : 'eval-source-map',
     entry: [path.resolve(cwd, 'src/index.tsx')],
-    // entry: ['src/index.tsx'],
     mode,
     module: {
       rules: [
+        // {
+        //   include: path.resolve(cwd, 'src'),
+        //   test: /\.(mjs|js|jsx|ts|tsx)/,
+        //   use: [babelLoaderConfig()],
+        // },
         {
           include: path.resolve(cwd, 'src'),
-          test: /\.(mjs|js|jsx|ts|tsx)/,
-          use: [babelLoaderConfig()],
+          test: /\.(ts|tsx)/,
+          use: [esbuildLoaderConfig()],
         },
         {
           test: /\.css$/,
@@ -57,6 +70,12 @@ function configFactory(env: { [key: string]: string }, argv: WebpackOptionsNorma
         },
       ]
     },
+    optimization: {
+      minimizer: [
+        // Use esbuild to minify
+        new ESBuildMinifyPlugin(),
+      ],
+    },
     output: {
       filename: isProduction(mode) ? '[name].[contenthash].js' : 'bundle.js',
       path: path.resolve(cwd, 'dist'),
@@ -68,6 +87,9 @@ function configFactory(env: { [key: string]: string }, argv: WebpackOptionsNorma
         template: path.join(cwd, 'config/index.html.ejs'),
       }),
     ],
+    resolve: {
+      extensions: ['.js', '.mjs', '.ts', '.tsx'],
+    },
     target: ['web', 'es5'],
   };
 }
