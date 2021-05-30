@@ -1,8 +1,8 @@
 import path from 'path';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { Configuration, WebpackOptionsNormalized } from 'webpack';
+import { WebpackOptionsNormalized } from 'webpack';
 
-const cwd = path.resolve(process.env.RUNFILES, 'bluebeam/clients/web-rosterpulse');
+const cwd = path.resolve(process.cwd() || '', 'clients/web-rosterpulse');
 
 const babelLoaderConfig = () => ({
   loader: 'babel-loader',
@@ -15,8 +15,8 @@ const babelLoaderConfig = () => ({
       '@babel/plugin-proposal-optional-chaining',
     ],
     presets: [
-      '@babel/preset-typescript',
       '@babel/preset-react',
+      '@babel/preset-typescript',
     ],
   },
 });
@@ -26,7 +26,7 @@ const isProduction = (mode: WebpackOptionsNormalized['mode']) => mode === 'produ
 const devServer = (): WebpackOptionsNormalized['devServer'] => ({
   // hot: true,
   historyApiFallback: true,
-  open: true,
+  // open: true,
   port: 3000,
   contentBase: path.resolve(cwd, 'dist'),
 });
@@ -37,6 +37,7 @@ function configFactory(env: { [key: string]: string }, argv: WebpackOptionsNorma
     devServer: isProduction(mode) ? {} : devServer(),
     devtool: isProduction(mode) ? 'source-map' : 'eval-source-map',
     entry: [path.resolve(cwd, 'src/index.tsx')],
+    // entry: ['src/index.tsx'],
     mode,
     module: {
       rules: [
@@ -61,10 +62,12 @@ function configFactory(env: { [key: string]: string }, argv: WebpackOptionsNorma
       path: path.resolve(cwd, 'dist'),
       publicPath: '/',
     },
-    plugins: new HtmlWebpackPlugin({
-      title: 'Rosterpulse',
-      template: path.join(cwd, 'config/index.html.ejs'),
-    }),
+    plugins: [
+      new HtmlWebpackPlugin({
+        title: 'Rosterpulse',
+        template: path.join(cwd, 'config/index.html.ejs'),
+      }),
+    ],
     target: ['web', 'es5'],
   };
 }
