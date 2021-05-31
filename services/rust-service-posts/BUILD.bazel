@@ -1,0 +1,7 @@
+load("@rules_rust//rust:rust.bzl", "rust_binary")
+
+rust_binary(
+    name = "posts-service",
+    srcs = ["src/main.rs"],
+    deps = ["//cargo:actix_web"],
+)
