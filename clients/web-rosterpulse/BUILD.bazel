@@ -37,6 +37,7 @@ _app_dependencies = [
     "@npm//@types",
     "@npm//react",
     "@npm//react-dom",
+    "@npm//@emotion/react"
 ]
 
 _app_sources = glob(["src/**/*.tsx"]);
@@ -58,6 +59,7 @@ _webpack_dependencies = [
     "@npm//style-loader",
     "@npm//webpack",
     "@npm//ts-node",
+    "@npm//@emotion/babel-plugin",
 ]
 
 webpack(
@@ -83,7 +85,7 @@ webpack(
         "serve",
         "--config",
         "$(rootpath config/webpack.config.ts)",
-        "--mode=development"
+        "--mode=development",
     ],
     data = _app_sources + _app_dependencies + _webpack_dependencies + [
         "config/index.html.ejs",

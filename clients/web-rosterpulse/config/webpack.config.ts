@@ -14,21 +14,22 @@ const babelLoaderConfig = () => ({
       '@babel/plugin-proposal-class-properties',
       '@babel/plugin-proposal-object-rest-spread',
       '@babel/plugin-proposal-optional-chaining',
+      '@emotion/babel-plugin',
     ],
     presets: [
-      '@babel/preset-react',
+      ['@babel/preset-react', { runtime: 'automatic', importSource: '@emotion/react' }],
       '@babel/preset-typescript',
     ],
   },
 });
 
-const esbuildLoaderConfig = () => ({
-  loader: 'esbuild-loader',
-  options: {
-    loader: 'tsx',
-    target: 'es2015',
-  },
-});
+// const esbuildLoaderConfig = () => ({
+//   loader: 'esbuild-loader',
+//   options: {
+//     loader: 'tsx',
+//     target: 'es2015',
+//   },
+// });
 
 const isProduction = (mode: WebpackOptionsNormalized['mode']) => mode === 'production';
 
@@ -49,16 +50,16 @@ function configFactory(env: { [key: string]: string }, argv: WebpackOptionsNorma
     mode,
     module: {
       rules: [
-        // {
-        //   include: path.resolve(cwd, 'src'),
-        //   test: /\.(mjs|js|jsx|ts|tsx)/,
-        //   use: [babelLoaderConfig()],
-        // },
         {
           include: path.resolve(cwd, 'src'),
-          test: /\.(ts|tsx)/,
-          use: [esbuildLoaderConfig()],
+          test: /\.(mjs|js|jsx|ts|tsx)/,
+          use: [babelLoaderConfig()],
         },
+        // {
+        //   include: path.resolve(cwd, 'src'),
+        //   test: /\.(ts|tsx)/,
+        //   use: [esbuildLoaderConfig()],
+        // },
         {
           test: /\.css$/,
           exclude: /node_modules/,
