@@ -1,0 +1,94 @@
+load("@npm//@bazel/typescript:index.bzl", "ts_config", "ts_project")
+load("@npm//webpack-cli:index.bzl", webpack = "webpack_cli")
+
+ts_config(
+    name = "tsconfig_lib",
+    src = "tsconfig.json",
+    deps = ["//:tsconfig"],
+)
+
+ts_project(
+    name = "webpack",
+    srcs = [
+        "config/webpack.config.ts",
+    ],
+#    source_map = True,
+    tsconfig = ":tsconfig_lib",
+    deps = [
+        "@npm//@types/node",
+        "@npm//@babel/core",
+        "@npm//@babel/plugin-proposal-class-properties",
+        "@npm//@babel/plugin-proposal-object-rest-spread",
+        "@npm//@babel/plugin-proposal-optional-chaining",
+        "@npm//@babel/plugin-syntax-dynamic-import",
+        "@npm//@babel/plugin-transform-typescript",
+        "@npm//@babel/preset-react",
+        "@npm//@babel/preset-typescript",
+        "@npm//babel-loader",
+        "@npm//css-loader",
+        "@npm//file-loader",
+        "@npm//html-webpack-plugin",
+        "@npm//style-loader",
+        "@npm//webpack",
+    ],
+)
+
+_app_dependencies = [
+    "@npm//@types",
+    "@npm//react",
+    "@npm//react-dom",
+    "@npm//@emotion/react"
+]
+
+_app_sources = glob(["src/**/*.tsx"]);
+
+_webpack_dependencies = [
+    "@npm//@babel/core",
+    "@npm//@babel/plugin-proposal-class-properties",
+    "@npm//@babel/plugin-proposal-object-rest-spread",
+    "@npm//@babel/plugin-proposal-optional-chaining",
+    "@npm//@babel/plugin-syntax-dynamic-import",
+    "@npm//@babel/plugin-transform-typescript",
+    "@npm//@babel/preset-react",
+    "@npm//@babel/preset-typescript",
+    "@npm//babel-loader",
+    "@npm//esbuild-loader",
+    "@npm//css-loader",
+    "@npm//file-loader",
+    "@npm//html-webpack-plugin",
+    "@npm//style-loader",
+    "@npm//webpack",
+    "@npm//ts-node",
+    "@npm//@emotion/babel-plugin",
+]
+
+webpack(
+    name = "bundle",
+    output_dir = True,
+    args = [
+        "build",
+        "--config",
+        "$(rootpath config/webpack.config.ts)",
+        "--mode=production",
+        "-o",
+        "$(@D)",
+    ],
+    data = _app_sources + _app_dependencies + _webpack_dependencies + [
+        "config/index.html.ejs",
+        "config/webpack.config.ts",
+    ],
+)
+
+webpack(
+    name = "serve",
+    args = [
+        "serve",
+        "--config",
+        "$(rootpath config/webpack.config.ts)",
+        "--mode=development",
+    ],
+    data = _app_sources + _app_dependencies + _webpack_dependencies + [
+        "config/index.html.ejs",
+        "config/webpack.config.ts",
+    ],
+)

@@ -12,7 +12,7 @@
     "preserveConstEnums": true,
     "removeComments": true,
     "target": "es2017",
-    "sourceMap": true,
+//    "sourceMap": true,
     "skipLibCheck": true,
     "experimentalDecorators": true,
     "jsx": "react",

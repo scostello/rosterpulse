@@ -1,5 +1,6 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 load("@bazel_gazelle//:def.bzl", "DEFAULT_LANGUAGES", "gazelle", "gazelle_binary")
+load("@npm//@bazel/typescript:index.bzl", "ts_config")
 
 gazelle_binary(
     name = "gazelle_binary",
@@ -27,4 +28,9 @@ go_library(
     name = "rosterpulse",
     srcs = ["dummy.go"],
     importpath = "github.com/scostello/rosterpulse",
+)
+
+ts_config(
+    name = "tsconfig",
+    src = "tsconfig.json",
 )
