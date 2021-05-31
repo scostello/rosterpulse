@@ -62,15 +62,14 @@ _webpack_dependencies = [
 
 webpack(
     name = "bundle",
-#    outs = ["app.bundle.js"],
-#    output_dir = True,
+    output_dir = True,
     args = [
         "build",
         "--config",
         "$(rootpath config/webpack.config.ts)",
         "--mode=production",
-#        "-o",
-#        "$(execpath dist)",
+        "-o",
+        "$(@D)",
     ],
     data = _app_sources + _app_dependencies + _webpack_dependencies + [
         "config/index.html.ejs",
