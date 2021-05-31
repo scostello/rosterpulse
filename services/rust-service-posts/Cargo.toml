@@ -1,5 +1,5 @@
 [package]
-name = "rosterpulse"
+name = "rust-service-posts"
 version = "0.1.0"
 authors = ["Sean Costello <me@seancostello.io>"]
 edition = "2018"
