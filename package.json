@@ -1,6 +1,9 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "start:web": "ibazel run //clients/web-rosterpulse:serve"
+  },
   "dependencies": {
     "@apollo/gateway": "0.28.2",
     "@babel/core": "^7.14.3",
